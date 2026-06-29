@@ -480,8 +480,9 @@ export function createIssue(issueData) {
   emit('issues_updated', newIssue);
 
   // Award XP for reporting
-  const { addXP } = require('./gamification');
-  addXP(getCurrentUser()?.id || 'user_1', 50, 'Reported an issue');
+  import('./gamification').then(({ addXP }) => {
+    addXP(getCurrentUser()?.id || 'user_1', 50, 'Reported an issue');
+  });
 
   return newIssue;
 }
@@ -550,8 +551,9 @@ export function verifyIssue(id) {
   emit('issues_updated', issues[idx]);
 
   // Award XP for verification
-  const { addXP } = require('./gamification');
-  addXP(getCurrentUser()?.id || 'user_1', 20, 'Verified an issue');
+  import('./gamification').then(({ addXP }) => {
+    addXP(getCurrentUser()?.id || 'user_1', 20, 'Verified an issue');
+  });
 
   return issues[idx];
 }
@@ -609,8 +611,9 @@ export function addComment(issueId, text) {
   emit('comments_updated', newComment);
 
   // Award XP for commenting
-  const { addXP } = require('./gamification');
-  addXP(getCurrentUser()?.id || 'user_1', 10, 'Commented on an issue');
+  import('./gamification').then(({ addXP }) => {
+    addXP(getCurrentUser()?.id || 'user_1', 10, 'Commented on an issue');
+  });
 
   return newComment;
 }

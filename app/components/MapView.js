@@ -24,6 +24,17 @@ const Popup = dynamic(
 const DEFAULT_CENTER = [28.6139, 77.2090]; // Delhi
 const DEFAULT_ZOOM = 13;
 
+const TILE_LAYERS = {
+  satellite: {
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    attribution: 'Tiles &copy; Esri',
+  },
+  street: {
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  },
+};
+
 export default function MapView({
   issues = [],
   center = DEFAULT_CENTER,
@@ -35,6 +46,7 @@ export default function MapView({
 }) {
   const [isMounted, setIsMounted] = useState(false);
   const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const [mapStyle, setMapStyle] = useState('street');
 
   useEffect(() => {
     setIsMounted(true);
@@ -67,43 +79,35 @@ export default function MapView({
     );
   }
 
-  const [mapStyle, setMapStyle] = useState('dark');
-
-  const tileUrl = mapStyle === 'dark' 
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-  
-  const tileAttribution = mapStyle === 'dark'
-    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    : 'Tiles &copy; Esri';
+  const currentTile = TILE_LAYERS[mapStyle];
 
   return (
     <div className={`map-container ${className}`} style={{ height, position: 'relative' }}>
       {/* Map Style Toggle */}
       <div style={{ 
         position: 'absolute', top: 12, right: 12, zIndex: 1000, 
-        display: 'flex', gap: '4px', background: 'rgba(15, 23, 42, 0.85)', 
+        display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.92)', 
         backdropFilter: 'blur(8px)', padding: '4px', borderRadius: '8px', 
-        border: '1px solid rgba(148, 163, 184, 0.15)' 
+        border: '1px solid rgba(0,0,0,0.1)', boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
         <button 
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMapStyle('dark'); }} 
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMapStyle('street'); }} 
           style={{ 
             padding: '6px 12px', fontSize: '11px', fontWeight: 600, borderRadius: '6px',
             cursor: 'pointer', transition: 'all 0.2s', border: 'none',
-            background: mapStyle === 'dark' ? 'var(--accent-blue)' : 'transparent',
-            color: mapStyle === 'dark' ? '#fff' : 'var(--text-secondary)'
+            background: mapStyle === 'street' ? '#ef4444' : 'transparent',
+            color: mapStyle === 'street' ? '#fff' : '#64748b'
           }}
         >
-          Dark Map
+          Street
         </button>
         <button 
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setMapStyle('satellite'); }} 
           style={{ 
             padding: '6px 12px', fontSize: '11px', fontWeight: 600, borderRadius: '6px',
             cursor: 'pointer', transition: 'all 0.2s', border: 'none',
-            background: mapStyle === 'satellite' ? 'var(--accent-blue)' : 'transparent',
-            color: mapStyle === 'satellite' ? '#fff' : 'var(--text-secondary)'
+            background: mapStyle === 'satellite' ? '#ef4444' : 'transparent',
+            color: mapStyle === 'satellite' ? '#fff' : '#64748b'
           }}
         >
           Satellite
@@ -115,10 +119,11 @@ export default function MapView({
         zoom={zoom}
         style={{ height: '100%', width: '100%' }}
         zoomControl={true}
+        key={mapStyle}
       >
         <TileLayer
-          attribution={tileAttribution}
-          url={tileUrl}
+          attribution={currentTile.attribution}
+          url={currentTile.url}
         />
         {issues.map((issue) => (
           issue.location?.lat && issue.location?.lng ? (
@@ -132,10 +137,10 @@ export default function MapView({
               {showPopups && (
                 <Popup>
                   <div style={{ minWidth: '200px' }}>
-                    <div style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#f1f5f9' }}>
+                    <div style={{ fontWeight: 700, fontSize: '14px', marginBottom: '4px', color: '#1e293b' }}>
                       {issue.title}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
                       {issue.location.address}
                     </div>
                     <div style={{ display: 'flex', gap: '6px', fontSize: '11px' }}>

@@ -11,13 +11,13 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload) return null;
   return (
     <div style={{
-      background: 'rgba(15, 23, 42, 0.95)',
-      border: '1px solid rgba(148, 163, 184, 0.12)',
+      background: 'rgba(255, 255, 255, 0.97)',
+      border: '1px solid rgba(0, 0, 0, 0.08)',
       borderRadius: '10px',
       padding: '12px 16px',
-      backdropFilter: 'blur(12px)',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
     }}>
-      <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '6px' }}>{label}</div>
       {payload.map((entry, i) => (
         <div key={i} style={{ fontSize: '13px', color: entry.color, display: 'flex', gap: '8px', alignItems: 'center' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: entry.color, display: 'inline-block' }} />
