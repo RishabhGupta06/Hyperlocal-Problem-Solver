@@ -587,6 +587,42 @@ export function updateUser(id, updates) {
   return users[idx];
 }
 
+export function setCurrentUserId(id) {
+  initializeStore();
+  setStorage(STORAGE_KEYS.CURRENT_USER, id);
+  emit('current_user_updated', id);
+}
+
+export function logout() {
+  setStorage(STORAGE_KEYS.CURRENT_USER, null);
+  emit('current_user_updated', null);
+}
+
+export function createUser(name) {
+  initializeStore();
+  const users = getStorage(STORAGE_KEYS.USERS) || [];
+  const avatars = ['👨‍💻', '👩‍🔬', '👨‍🏫', '👩‍⚕️', '👨‍🔧', '👩‍💼', '👨‍🍳', '👩‍🎨', '🥷', '🧑‍🚀'];
+  const newUserId = generateId();
+  
+  const newUser = {
+    id: newUserId,
+    name,
+    avatar: avatars[Math.floor(Math.random() * avatars.length)],
+    xp: 0,
+    level: 'Citizen',
+    reports: 0,
+    verifications: 0,
+    streak: 0,
+    badges: [],
+  };
+  
+  users.push(newUser);
+  setStorage(STORAGE_KEYS.USERS, users);
+  emit('users_updated', newUser);
+  
+  return newUser;
+}
+
 // ── Comments ───────────────────────────────────────────────
 export function getComments(issueId) {
   initializeStore();

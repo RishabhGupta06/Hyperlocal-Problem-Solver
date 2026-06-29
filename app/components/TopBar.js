@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { Search, Bell, ChevronRight } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Search, Bell, ChevronRight, LogOut } from 'lucide-react';
+import { logout } from '../lib/store';
 
 const PAGE_TITLES = {
   '/': 'Dashboard',
@@ -14,7 +15,13 @@ const PAGE_TITLES = {
 
 export default function TopBar({ collapsed, currentUser }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   // Get page title
   let pageTitle = PAGE_TITLES[pathname] || 'Issue Detail';
@@ -49,6 +56,15 @@ export default function TopBar({ collapsed, currentUser }) {
         <div className="topbar-avatar" title={currentUser?.name || 'User'}>
           {currentUser?.avatar || '👨‍💻'}
         </div>
+        
+        <button 
+          className="topbar-icon-btn" 
+          title="Logout"
+          onClick={handleLogout}
+          style={{ marginLeft: '8px' }}
+        >
+          <LogOut size={18} />
+        </button>
       </div>
     </header>
   );
