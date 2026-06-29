@@ -79,15 +79,35 @@ export default function ReportIssuePage() {
   const handleGetLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          
           setFormData(prev => ({
             ...prev,
             location: {
               ...prev.location,
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
+              lat,
+              lng,
             }
           }));
+
+          try {
+            // Reverse geocode to get address
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await response.json();
+            if (data && data.display_name) {
+              setFormData(prev => ({
+                ...prev,
+                location: {
+                  ...prev.location,
+                  address: data.display_name
+                }
+              }));
+            }
+          } catch (error) {
+            console.error('Error fetching address:', error);
+          }
         },
         () => {
           // Default Delhi coordinates if geolocation fails
@@ -115,7 +135,7 @@ export default function ReportIssuePage() {
 
   const canProceed = () => {
     switch (step) {
-      case 0: return formData.title.length >= 5 && formData.description.length >= 10;
+      case 0: return formData.title.trim().length >= 3 && formData.description.trim().length >= 3;
       case 1: return true; // Media is optional
       case 2: return formData.location.address.length > 0;
       case 3: return true;

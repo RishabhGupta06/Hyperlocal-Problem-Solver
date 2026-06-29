@@ -1,19 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Search, Bell, ChevronRight, LogOut } from 'lucide-react';
+import { 
+  Search, Bell, LogOut, LayoutDashboard, 
+  FilePlus, Map, BarChart3, Trophy 
+} from 'lucide-react';
 import { logout } from '../lib/store';
 
-const PAGE_TITLES = {
-  '/': 'Dashboard',
-  '/report': 'Report Issue',
-  '/map': 'Live Map',
-  '/analytics': 'Analytics',
-  '/leaderboard': 'Leaderboard',
-};
+const NAV_ITEMS = [
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/report', label: 'Report Issue', icon: FilePlus, highlight: true },
+  { href: '/map', label: 'Live Map', icon: Map },
+  { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+];
 
-export default function TopBar({ collapsed, currentUser }) {
+export default function TopBar({ currentUser }) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,20 +27,40 @@ export default function TopBar({ collapsed, currentUser }) {
     router.push('/login');
   };
 
-  // Get page title
-  let pageTitle = PAGE_TITLES[pathname] || 'Issue Detail';
-  if (pathname.startsWith('/issues/')) pageTitle = 'Issue Detail';
-
   return (
-    <header className={`topbar ${collapsed ? 'sidebar-collapsed' : ''}`}>
-      <div className="topbar-left">
-        <div className="topbar-breadcrumb">
-          <span>Community Hero</span>
-          <ChevronRight size={14} />
-          <span className="current">{pageTitle}</span>
-        </div>
+    <header className="topbar">
+      {/* Left: Logo */}
+      <div className="topbar-logo">
+        <div className="topbar-logo-icon">🏛️</div>
+        <span className="topbar-logo-text">Community Hero</span>
       </div>
 
+      {/* Center: Navigation */}
+      <nav className="topbar-nav">
+        {NAV_ITEMS.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href ||
+            (item.href !== '/' && pathname.startsWith(item.href));
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`nav-item ${isActive ? 'active' : ''}`}
+            >
+              <span className="nav-icon">
+                <Icon size={18} />
+              </span>
+              <span className="nav-label">{item.label}</span>
+              {item.highlight && (
+                <span className="nav-badge">New</span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Right: Controls & Profile */}
       <div className="topbar-right">
         <div className="topbar-search">
           <Search size={16} className="topbar-search-icon" />

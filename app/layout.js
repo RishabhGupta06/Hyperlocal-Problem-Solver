@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import { initializeStore, getCurrentUser } from './lib/store';
 import './globals.css';
 
 export default function RootLayout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
   
@@ -49,9 +47,8 @@ export default function RootLayout({ children }) {
           children
         ) : (
           <div className="app-layout">
-            <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-            <main className={`main-content ${collapsed ? 'sidebar-collapsed' : ''}`}>
-              <TopBar collapsed={collapsed} currentUser={currentUser} />
+            <TopBar currentUser={currentUser} />
+            <main className="main-content">
               <div className="page-content">
                 {children}
               </div>
